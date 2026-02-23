@@ -1,4 +1,4 @@
-import { getTodos } from '@/actions/todos';
+import { getTodos, type Todo } from '@/actions/todos';
 import { getSession } from '@/lib/session';
 import TodoForm from '@/components/TodoForm';
 import TodoList from '@/components/TodoList';
