@@ -1,7 +1,7 @@
 'use server';
 
 import { revalidatePath } from 'next/cache';
-import { sql } from '@/lib/db';
+import sql from '@/lib/db';
 import { getSession } from '@/lib/session';
 import { todoSchema } from '@/lib/validations';
 
@@ -22,13 +22,13 @@ async function requireSession() {
 
 export async function getTodos(): Promise<Todo[]> {
   const session = await requireSession();
-  const result = await sql<Todo>`
+  const result = await sql`
     SELECT id, title, completed, created_at, updated_at
     FROM todos
     WHERE user_id = ${session.userId}
     ORDER BY created_at DESC
   `;
-  return result.rows as Todo[];
+  return result as unknown as Todo[];
 }
 
 export async function createTodo(formData: FormData) {
