@@ -1,73 +1,74 @@
 'use client';
 
-import { useState, useTransition } from 'react';
-import { toggleTodo, deleteTodo, updateTodoTitle } from '@/actions/todos';
+import { useState } from 'react';
+import { type Todo, toggleTodo, deleteTodo, updateTodoTitle } from '@/actions/todos';
 
-interface Todo {
-  id: number;
-  title: string;
-  completed: boolean;
+interface TodoItemProps {
+  todo: Todo;
 }
 
-export default function TodoItem({ todo }: { todo: Todo }) {
-  const [isPending, startTransition] = useTransition();
+export default function TodoItem({ todo }: TodoItemProps) {
   const [editing, setEditing] = useState(false);
-  const [editValue, setEditValue] = useState(todo.title);
+  const [title, setTitle] = useState(todo.title);
+  const [loading, setLoading] = useState(false);
 
-  function handleToggle() {
-    startTransition(() => toggleTodo(todo.id));
+  async function handleToggle() {
+    setLoading(true);
+    await toggleTodo(todo.id);
+    setLoading(false);
   }
 
-  function handleDelete() {
-    startTransition(() => deleteTodo(todo.id));
+  async function handleDelete() {
+    setLoading(true);
+    await deleteTodo(todo.id);
+    setLoading(false);
   }
 
-  function handleEdit() {
-    if (!editing) return setEditing(true);
-    startTransition(async () => {
-      await updateTodoTitle(todo.id, editValue);
-      setEditing(false);
-    });
+  async function handleEdit() {
+    if (!editing) { setEditing(true); return; }
+    if (title.trim() === todo.title) { setEditing(false); return; }
+    setLoading(true);
+    await updateTodoTitle(todo.id, title);
+    setEditing(false);
+    setLoading(false);
   }
 
   return (
-    <li className="flex items-center gap-3 p-3 bg-white border border-gray-200 rounded-lg group">
+    <li className="flex items-center gap-3 bg-white border border-gray-200 rounded-lg px-4 py-3 group">
       <input
         type="checkbox"
         checked={todo.completed}
         onChange={handleToggle}
-        disabled={isPending}
-        className="w-4 h-4 accent-blue-600 cursor-pointer"
+        disabled={loading}
+        className="w-4 h-4 accent-black cursor-pointer"
       />
-
       {editing ? (
         <input
-          value={editValue}
-          onChange={e => setEditValue(e.target.value)}
-          onKeyDown={e => e.key === 'Enter' && handleEdit()}
+          className="flex-1 text-sm border-b border-gray-400 outline-none bg-transparent"
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
+          onKeyDown={(e) => e.key === 'Enter' && handleEdit()}
           autoFocus
-          className="flex-1 px-2 py-0.5 border border-blue-400 rounded focus:outline-none"
         />
       ) : (
         <span className={`flex-1 text-sm ${todo.completed ? 'line-through text-gray-400' : ''}`}>
           {todo.title}
         </span>
       )}
-
-      <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-        <button onClick={handleEdit} disabled={isPending}
-          className="text-xs px-2 py-1 text-gray-500 hover:text-blue-600 hover:bg-blue-50 rounded">
+      <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+        <button
+          onClick={handleEdit}
+          disabled={loading}
+          className="text-xs text-blue-500 hover:text-blue-700 disabled:opacity-50"
+        >
           {editing ? 'Save' : 'Edit'}
         </button>
-        {editing && (
-          <button onClick={() => setEditing(false)}
-            className="text-xs px-2 py-1 text-gray-500 hover:bg-gray-50 rounded">
-            Cancel
-          </button>
-        )}
-        <button onClick={handleDelete} disabled={isPending}
-          className="text-xs px-2 py-1 text-gray-500 hover:text-red-600 hover:bg-red-50 rounded">
-          Delete
+        <button
+          onClick={handleDelete}
+          disabled={loading}
+          className="text-xs text-red-500 hover:text-red-700 disabled:opacity-50"
+        >
+          Del
         </button>
       </div>
     </li>
