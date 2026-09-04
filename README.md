@@ -1,35 +1,27 @@
-# Next.js Todo App
+# Flowlist
 
-A production-ready Todo application built with Next.js 15 App Router, Vercel Postgres, and custom JWT authentication.
+A modern, focused todo app built with Next.js, React, Tailwind CSS, and PostgreSQL.
 
-## Tech Stack
+## Highlights
 
-- **Framework**: Next.js 15 (App Router)
-- **Database**: Vercel Postgres (Neon)
-- **Auth**: Custom JWT via `jose` + bcrypt password hashing
-- **Styling**: Tailwind CSS
-- **Deployment**: Vercel
+- Clean responsive dashboard with progress summary
+- Fast task creation, editing, completion, and deletion
+- All / To do / Done task filters
+- Modern authentication screens for sign in and registration
+- Accessible focus states and mobile-friendly controls
 
-## Features
-
-- User registration and login
-- HTTP-only cookie sessions (XSS-safe)
-- Per-user todo isolation (IDOR-safe)
-- Full CRUD: create, toggle, edit, delete todos
-- Server Actions for mutations
-- Protected routes via middleware
-
-## Getting Started
+## Development
 
 ```bash
 npm install
-vercel env pull .env.local
-npm run migrate
 npm run dev
 ```
 
-## Deployment
+The app uses PostgreSQL for persistence. Configure the required environment variables from `.env.example` before running the application.
+
+## Production
 
 ```bash
-vercel --prod
+npm run build
+npm start
 ```
