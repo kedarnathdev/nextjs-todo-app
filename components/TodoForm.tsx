@@ -22,23 +22,29 @@ export default function TodoForm() {
 
   return (
     <div>
-      <form ref={ref} action={handleSubmit} className="flex gap-2">
-        <input
-          name="title"
-          type="text"
-          placeholder="Add a new todo..."
-          required
-          className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-        />
+      <form ref={ref} action={handleSubmit} className="flex flex-col gap-2 sm:flex-row">
+        <label className="sr-only" htmlFor="todo-title">New task</label>
+        <div className="relative flex-1">
+          <span className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-gray-400">＋</span>
+          <input
+            id="todo-title"
+            name="title"
+            type="text"
+            placeholder="What needs to get done?"
+            required
+            autoComplete="off"
+            className="w-full rounded-xl border border-gray-200 bg-gray-50 px-10 py-3.5 text-sm text-gray-900 outline-none transition placeholder:text-gray-400 hover:border-gray-300 focus:border-[var(--accent)] focus:bg-white focus:ring-4 focus:ring-indigo-100"
+          />
+        </div>
         <button
           type="submit"
           disabled={isPending}
-          className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 font-medium whitespace-nowrap"
+          className="rounded-xl bg-[var(--accent)] px-5 py-3.5 text-sm font-semibold text-white shadow-sm transition hover:bg-[var(--accent-strong)] hover:shadow-md disabled:cursor-not-allowed disabled:opacity-60"
         >
-          {isPending ? 'Adding...' : 'Add Todo'}
+          {isPending ? 'Adding…' : 'Add task'}
         </button>
       </form>
-      {error && <p className="text-red-600 text-sm mt-1">{error}</p>}
+      {error && <p className="mt-2 text-sm font-medium text-red-600" role="alert">{error}</p>}
     </div>
   );
 }
