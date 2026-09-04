@@ -2,14 +2,14 @@ import type { Metadata } from 'next';
 import './globals.css';
 
 export const metadata: Metadata = {
-  title: 'Todo App',
-  description: 'A production-ready todo application',
+  title: 'Flowlist — Focus on what matters',
+  description: 'A calm, modern workspace for capturing and completing everyday tasks.',
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
-      <body className="bg-gray-50 text-gray-900 antialiased">{children}</body>
+      <body>{children}</body>
     </html>
   );
 }

@@ -3,8 +3,21 @@
 import { useState } from 'react';
 import { type Todo, toggleTodo, deleteTodo, updateTodoTitle } from '@/actions/todos';
 
-interface TodoItemProps {
-  todo: Todo;
+interface TodoItemProps { todo: Todo; }
+
+function IconButton({ label, onClick, children, disabled, danger = false }: { label: string; onClick: () => void; children: React.ReactNode; disabled: boolean; danger?: boolean }) {
+  return (
+    <button
+      type="button"
+      aria-label={label}
+      title={label}
+      onClick={onClick}
+      disabled={disabled}
+      className={`grid h-9 w-9 place-items-center rounded-lg border text-sm transition ${danger ? 'border-transparent text-gray-400 hover:border-red-100 hover:bg-red-50 hover:text-red-600' : 'border-transparent text-gray-400 hover:border-gray-200 hover:bg-gray-50 hover:text-gray-700'} disabled:cursor-not-allowed disabled:opacity-40`}
+    >
+      {children}
+    </button>
+  );
 }
 
 export default function TodoItem({ todo }: TodoItemProps) {
@@ -26,50 +39,48 @@ export default function TodoItem({ todo }: TodoItemProps) {
 
   async function handleEdit() {
     if (!editing) { setEditing(true); return; }
-    if (title.trim() === todo.title) { setEditing(false); return; }
+    const nextTitle = title.trim();
+    if (!nextTitle || nextTitle === todo.title) { setTitle(todo.title); setEditing(false); return; }
     setLoading(true);
-    await updateTodoTitle(todo.id, title);
-    setEditing(false);
+    const result = await updateTodoTitle(todo.id, nextTitle);
+    if (!result?.error) setEditing(false);
     setLoading(false);
   }
 
   return (
-    <li className="flex items-center gap-3 bg-white border border-gray-200 rounded-lg px-4 py-3 group">
-      <input
-        type="checkbox"
-        checked={todo.completed}
-        onChange={handleToggle}
+    <li className={`group flex items-center gap-3 rounded-xl border bg-white px-4 py-3 transition duration-200 ${todo.completed ? 'border-gray-100 bg-gray-50/80' : 'border-gray-200 hover:-translate-y-0.5 hover:border-gray-300 hover:shadow-[0_8px_24px_rgba(17,24,39,0.06)]'}`}>
+      <button
+        type="button"
+        aria-label={todo.completed ? 'Mark task incomplete' : 'Mark task complete'}
+        onClick={handleToggle}
         disabled={loading}
-        className="w-4 h-4 accent-black cursor-pointer"
-      />
+        className={`grid h-5 w-5 shrink-0 place-items-center rounded-full border-2 transition ${todo.completed ? 'border-[var(--accent)] bg-[var(--accent)]' : 'border-gray-300 bg-white hover:border-[var(--accent)]'}`}
+      >
+        {todo.completed && <span className="text-[10px] font-black text-white">✓</span>}
+      </button>
+
       {editing ? (
         <input
-          className="flex-1 text-sm border-b border-gray-400 outline-none bg-transparent"
+          className="min-w-0 flex-1 rounded-lg border border-[var(--accent)] bg-white px-2 py-1.5 text-sm outline-none ring-4 ring-indigo-50"
           value={title}
           onChange={(e) => setTitle(e.target.value)}
-          onKeyDown={(e) => e.key === 'Enter' && handleEdit()}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter') handleEdit();
+            if (e.key === 'Escape') { setTitle(todo.title); setEditing(false); }
+          }}
           autoFocus
         />
       ) : (
-        <span className={`flex-1 text-sm ${todo.completed ? 'line-through text-gray-400' : ''}`}>
-          {todo.title}
-        </span>
+        <span className={`min-w-0 flex-1 text-sm font-medium ${todo.completed ? 'text-gray-400 line-through' : 'text-gray-800'}`}>{todo.title}</span>
       )}
-      <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-        <button
-          onClick={handleEdit}
-          disabled={loading}
-          className="text-xs text-blue-500 hover:text-blue-700 disabled:opacity-50"
-        >
-          {editing ? 'Save' : 'Edit'}
-        </button>
-        <button
-          onClick={handleDelete}
-          disabled={loading}
-          className="text-xs text-red-500 hover:text-red-700 disabled:opacity-50"
-        >
-          Del
-        </button>
+
+      <div className="flex shrink-0 items-center gap-1 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 sm:focus-within:opacity-100">
+        <IconButton label={editing ? 'Save task' : 'Edit task'} onClick={handleEdit} disabled={loading}>
+          {editing ? '✓' : '✎'}
+        </IconButton>
+        <IconButton label="Delete task" onClick={handleDelete} disabled={loading} danger>
+          ×
+        </IconButton>
       </div>
     </li>
   );
