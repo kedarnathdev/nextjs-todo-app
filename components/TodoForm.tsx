@@ -11,12 +11,8 @@ export default function TodoForm() {
   function handleSubmit(formData: FormData) {
     startTransition(async () => {
       const result = await createTodo(formData);
-      if (result?.error) {
-        setError(result.error);
-      } else {
-        setError('');
-        ref.current?.reset();
-      }
+      if (result?.error) setError(result.error);
+      else { setError(''); ref.current?.reset(); }
     });
   }
 
@@ -25,26 +21,16 @@ export default function TodoForm() {
       <form ref={ref} action={handleSubmit} className="flex flex-col gap-2 sm:flex-row">
         <label className="sr-only" htmlFor="todo-title">New task</label>
         <div className="relative flex-1">
-          <span className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-gray-400">＋</span>
-          <input
-            id="todo-title"
-            name="title"
-            type="text"
-            placeholder="What needs to get done?"
-            required
-            autoComplete="off"
-            className="w-full rounded-xl border border-gray-200 bg-gray-50 px-10 py-3.5 text-sm text-gray-900 outline-none transition placeholder:text-gray-400 hover:border-gray-300 focus:border-[var(--accent)] focus:bg-white focus:ring-4 focus:ring-indigo-100"
-          />
+          <span className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 dark:text-zinc-500">＋</span>
+          <input id="todo-title" name="title" type="text" placeholder="What needs to get done?" required autoComplete="off"
+            className="w-full rounded-xl border border-gray-200 bg-gray-50 px-10 py-3.5 text-sm text-gray-900 outline-none transition placeholder:text-gray-400 hover:border-gray-300 focus:border-[var(--accent)] focus:bg-white focus:ring-4 focus:ring-indigo-100 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-100 dark:placeholder:text-zinc-600 dark:hover:border-zinc-700 dark:focus:bg-zinc-950 dark:focus:ring-indigo-500/10" />
         </div>
-        <button
-          type="submit"
-          disabled={isPending}
-          className="rounded-xl bg-[var(--accent)] px-5 py-3.5 text-sm font-semibold text-white shadow-sm transition hover:bg-[var(--accent-strong)] hover:shadow-md disabled:cursor-not-allowed disabled:opacity-60"
-        >
+        <button type="submit" disabled={isPending}
+          className="rounded-xl bg-[var(--accent)] px-5 py-3.5 text-sm font-semibold text-white shadow-sm transition hover:bg-[var(--accent-strong)] hover:shadow-md disabled:cursor-not-allowed disabled:opacity-60">
           {isPending ? 'Adding…' : 'Add task'}
         </button>
       </form>
-      {error && <p className="mt-2 text-sm font-medium text-red-600" role="alert">{error}</p>}
+      {error && <p className="mt-2 text-sm font-medium text-red-600 dark:text-red-400" role="alert">{error}</p>}
     </div>
   );
 }
