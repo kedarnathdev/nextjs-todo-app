@@ -5,6 +5,21 @@ import { signToken } from '@/lib/auth';
 import { setSessionCookie } from '@/lib/session';
 import { loginSchema } from '@/lib/validations';
 
+const DEMO_EMAIL = 'demo@flowlist.app';
+const DEMO_PASSWORD = 'Demo@12345';
+
+async function ensureDemoUser() {
+  const existing = await sql`SELECT id FROM users WHERE email = ${DEMO_EMAIL} LIMIT 1`;
+  if (existing.length > 0) return;
+
+  const hashedPassword = await bcrypt.hash(DEMO_PASSWORD, 12);
+  await sql`
+    INSERT INTO users (name, email, password)
+    VALUES ('Demo User', ${DEMO_EMAIL}, ${hashedPassword})
+    ON CONFLICT (email) DO NOTHING
+  `;
+}
+
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
@@ -18,6 +33,10 @@ export async function POST(req: NextRequest) {
     }
 
     const { email, password } = parsed.data;
+
+    if (email === DEMO_EMAIL && password === DEMO_PASSWORD) {
+      await ensureDemoUser();
+    }
 
     const result = await sql`SELECT id, email, name, password FROM users WHERE email = ${email} LIMIT 1`;
 
