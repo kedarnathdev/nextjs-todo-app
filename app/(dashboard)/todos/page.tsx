@@ -3,38 +3,61 @@ import { getSession } from '@/lib/session';
 import TodoForm from '@/components/TodoForm';
 import TodoList from '@/components/TodoList';
 import LogoutButton from '@/components/LogoutButton';
-import ThemeToggle from '@/components/ThemeToggle';
-import { AnimatedCounter } from '@/components/ui/animated-counter';
-import { StepPlayer } from '@/components/ui/step-player';
 
 export default async function TodosPage() {
   const [session, todos] = await Promise.all([getSession(), getTodos()]);
   const completed = todos.filter((todo) => todo.completed).length;
   const active = todos.length - completed;
-  const firstName = session?.email?.split('@')[0] ?? 'there';
 
   return (
-    <div className="min-h-screen bg-[#f4f4f5] text-zinc-950 dark:bg-[#09090b] dark:text-zinc-100">
-      <header className="sticky top-0 z-30 border-b border-zinc-200/70 bg-[#f4f4f5]/85 backdrop-blur-xl dark:border-zinc-800/70 dark:bg-[#09090b]/85">
-        <div className="mx-auto flex max-w-6xl items-center justify-between px-5 py-4 sm:px-8">
-          <div className="flex items-center gap-3"><div className="grid h-10 w-10 place-items-center rounded-full bg-zinc-950 text-sm font-black text-white dark:bg-white dark:text-zinc-950">F</div><div><p className="text-sm font-bold">Flowlist</p><p className="text-[11px] text-zinc-400">focus / finish / repeat</p></div></div>
-          <div className="flex items-center gap-2"><ThemeToggle/><div className="hidden text-right sm:block"><p className="text-xs font-semibold">{session?.email}</p><p className="text-[11px] text-zinc-400">personal workspace</p></div><LogoutButton/></div>
+    <main className="min-h-screen bg-black text-white">
+      <header className="border-b border-[#30363d] bg-[#0d1117]">
+        <div className="mx-auto flex max-w-[1280px] items-center justify-between gap-4 px-4 py-3 sm:px-6">
+          <div className="flex min-w-0 items-center gap-3">
+            <div className="grid h-8 w-8 shrink-0 place-items-center rounded-full border border-white text-sm font-semibold">F</div>
+            <div className="min-w-0">
+              <p className="truncate text-sm font-semibold">Flowlist</p>
+              <p className="hidden font-mono text-xs text-[#8b949e] sm:block">personal / tasks</p>
+            </div>
+          </div>
+          <div className="flex items-center gap-3">
+            <span className="hidden max-w-[260px] truncate text-sm text-[#8b949e] sm:block">{session?.email}</span>
+            <LogoutButton />
+          </div>
         </div>
       </header>
-      <main className="mx-auto max-w-6xl px-5 py-8 sm:px-8 sm:py-12">
-        <section className="mb-8 grid gap-8 lg:grid-cols-[1.2fr_.8fr] lg:items-end">
-          <div><p className="mb-3 text-xs font-bold uppercase tracking-[.2em] text-zinc-400">Your command center</p><h1 className="text-4xl font-black tracking-[-.04em] sm:text-6xl">Make space for<br/><span className="text-zinc-400">what matters.</span></h1><p className="mt-5 max-w-xl text-sm leading-6 text-zinc-500 dark:text-zinc-400">Good to see you, {firstName}. Turn loose thoughts into small, finishable actions.</p></div>
-          <div className="rounded-[28px] border border-zinc-200 bg-white p-6 shadow-[0_20px_70px_rgba(0,0,0,.06)] dark:border-zinc-800 dark:bg-zinc-950 dark:shadow-none">
-            <div className="mb-6 flex items-end justify-between"><div><p className="text-xs font-semibold uppercase tracking-widest text-zinc-400">Momentum</p><p className="mt-1 text-sm text-zinc-500">{completed} completed today</p></div><AnimatedCounter value={completed} className="text-5xl font-black tracking-[-.06em]"/></div>
-            <StepPlayer steps={Math.max(todos.length,1)} value={completed}/>
-            <div className="mt-4 flex justify-between text-[11px] font-semibold text-zinc-400"><span>{active} remaining</span><span>{todos.length ? Math.round((completed/todos.length)*100) : 0}% complete</span></div>
+
+      <div className="border-b border-[#30363d] bg-[#0d1117]">
+        <div className="mx-auto max-w-[1280px] px-4 sm:px-6">
+          <div className="flex h-12 items-center gap-6 text-sm">
+            <span className="flex h-full items-center border-b-2 border-[#8dd6ff] font-semibold text-white">Tasks <span className="ml-2 rounded-full bg-[#21262d] px-2 py-0.5 text-xs text-[#8b949e]">{todos.length}</span></span>
+            <span className="text-[#8b949e]">Open {active}</span>
+            <span className="text-[#8b949e]">Completed {completed}</span>
           </div>
-        </section>
-        <section className="grid gap-5 lg:grid-cols-[.72fr_1.28fr]">
-          <div className="rounded-[28px] bg-zinc-950 p-6 text-white shadow-[0_24px_80px_rgba(0,0,0,.12)] dark:bg-white dark:text-zinc-950 sm:p-8"><p className="text-xs font-bold uppercase tracking-[.2em] opacity-40">Capture</p><h2 className="mt-3 text-2xl font-black tracking-tight">What needs your attention?</h2><p className="mt-2 text-sm leading-6 opacity-55">One task at a time. Keep the list honest.</p><div className="mt-7"><TodoForm/></div></div>
-          <div className="rounded-[28px] border border-zinc-200 bg-white p-5 shadow-[0_20px_70px_rgba(0,0,0,.05)] dark:border-zinc-800 dark:bg-zinc-950 sm:p-7"><TodoList todos={todos}/></div>
-        </section>
-      </main>
-    </div>
+        </div>
+      </div>
+
+      <section className="mx-auto max-w-[1280px] px-4 py-8 sm:px-6 lg:py-12">
+        <div className="mb-8 max-w-3xl">
+          <p className="mb-2 font-mono text-xs tracking-[.5px] text-[#8b949e]">~/flowlist</p>
+          <h1 className="text-[32px] font-normal leading-tight tracking-tight sm:text-[40px]">Tasks</h1>
+          <p className="mt-3 text-base text-[#8b949e]">A focused place to track work, ideas, and the next thing worth finishing.</p>
+        </div>
+
+        <div className="grid gap-6 lg:grid-cols-[minmax(280px,360px)_1fr] lg:items-start">
+          <aside className="gh-panel gh-card-shadow p-4 sm:p-5">
+            <div className="mb-5">
+              <p className="text-sm font-semibold">Create a task</p>
+              <p className="mt-1 text-sm text-[#8b949e]">Add a concise, actionable item.</p>
+            </div>
+            <TodoForm />
+          </aside>
+
+          <section className="gh-panel overflow-hidden">
+            <TodoList todos={todos} />
+          </section>
+        </div>
+      </section>
+    </main>
   );
 }
