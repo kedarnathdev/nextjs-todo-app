@@ -16,7 +16,8 @@
     "postgres": "^3.4.4",
     "bcryptjs": "^2.4.3",
     "jose": "^5.9.6",
-    "zod": "^3.23.8"
+    "zod": "^3.23.8",
+    "motion": "^12.23.12"
   },
   "devDependencies": {
     "@types/bcryptjs": "^2.4.6",
