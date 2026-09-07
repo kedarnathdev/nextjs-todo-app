@@ -1,4 +1,26 @@
 'use client';
-import { useRef,useState,useTransition } from 'react';
+import { useRef, useState, useTransition } from 'react';
 import { createTodo } from '@/actions/todos';
-export default function TodoForm(){const [error,setError]=useState('');const [pending,startTransition]=useTransition();const ref=useRef<HTMLFormElement>(null);function submit(fd:FormData){startTransition(async()=>{const r=await createTodo(fd);if(r?.error)setError(r.error);else{setError('');ref.current?.reset()}})}return <div><form ref={ref} action={submit} className="flex gap-2"><label htmlFor="todo-title" className="sr-only">New task</label><input id="todo-title" name="title" required autoComplete="off" placeholder="Write the next small thing…" className="min-w-0 flex-1 rounded-2xl border border-white/15 bg-white/10 px-4 py-3.5 text-sm text-white outline-none placeholder:text-white/35 focus:border-white/40 dark:border-zinc-300/20 dark:bg-zinc-950/10 dark:text-zinc-950 dark:placeholder:text-zinc-950/40"/><button disabled={pending} className="rounded-2xl bg-white px-5 py-3.5 text-sm font-bold text-zinc-950 transition hover:scale-[1.02] disabled:opacity-50 dark:bg-zinc-950 dark:text-white">{pending?'…':'Add'}</button></form>{error&&<p className="mt-3 text-xs text-red-300">{error}</p>}</div>}
+
+export default function TodoForm() {
+  const [error, setError] = useState('');
+  const [pending, startTransition] = useTransition();
+  const ref = useRef<HTMLFormElement>(null);
+
+  function submit(fd: FormData) {
+    startTransition(async () => {
+      const result = await createTodo(fd);
+      if (result?.error) setError(result.error);
+      else { setError(''); ref.current?.reset(); }
+    });
+  }
+
+  return (
+    <form ref={ref} action={submit} className="space-y-3">
+      <label htmlFor="todo-title" className="block text-xs font-semibold uppercase tracking-wide text-[#8b949e]">Task title</label>
+      <input id="todo-title" name="title" required autoComplete="off" placeholder="e.g. Review deployment logs" className="gh-input w-full" />
+      <button type="submit" disabled={pending} className="gh-primary-button w-full">{pending ? 'Creating…' : 'Create task'}</button>
+      {error && <p role="alert" className="text-sm text-[#ff7b72]">{error}</p>}
+    </form>
+  );
+}
