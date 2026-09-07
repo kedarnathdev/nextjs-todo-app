@@ -2,11 +2,49 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import ThemeToggle from '@/components/ThemeToggle';
-import { GooeyNav } from '@/components/ui/gooey-nav';
 
-export default function LoginPage(){
- const router=useRouter(); const [error,setError]=useState(''); const [loading,setLoading]=useState(false);
- async function submit(e:React.FormEvent<HTMLFormElement>){e.preventDefault();setLoading(true);setError('');try{const f=new FormData(e.currentTarget);const res=await fetch('/api/auth/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:f.get('email'),password:f.get('password')})});const data=await res.json();if(!res.ok){setError(data.error??'Unable to sign in.');return}router.push('/todos');router.refresh()}catch{setError('Something went wrong.')}finally{setLoading(false)}}
- return <main className="min-h-screen bg-[#f4f4f5] px-5 py-6 dark:bg-[#09090b]"><div className="mx-auto flex max-w-6xl justify-between"><Link href="/login" className="text-sm font-black">Flowlist<span className="text-zinc-400">/auth</span></Link><ThemeToggle/></div><div className="mx-auto grid min-h-[calc(100vh-7rem)] max-w-6xl items-center gap-12 lg:grid-cols-[1fr_460px]"><section className="hidden lg:block"><p className="mb-4 text-xs font-bold uppercase tracking-[.2em] text-zinc-400">A calmer workspace</p><h1 className="max-w-2xl text-7xl font-black tracking-[-.06em]">Do less.<br/><span className="text-zinc-400">Finish more.</span></h1><p className="mt-6 max-w-lg text-sm leading-7 text-zinc-500 dark:text-zinc-400">Flowlist keeps your tasks close to the surface and everything else out of the way.</p></section><section className="rounded-[32px] border border-zinc-200 bg-white p-7 shadow-[0_30px_100px_rgba(0,0,0,.08)] dark:border-zinc-800 dark:bg-zinc-950 dark:shadow-none sm:p-10"><div className="mb-8"><GooeyNav value={0} onChange={i=>{if(i===1)router.push('/register')}} items={['Sign in','Create account']} size="sm"/><h2 className="mt-8 text-3xl font-black tracking-tight">Welcome back.</h2><p className="mt-2 text-sm text-zinc-500">Sign in and pick up where you left off.</p></div>{error&&<div className="mb-5 rounded-2xl bg-red-50 px-4 py-3 text-sm text-red-600 dark:bg-red-500/10 dark:text-red-300">{error}</div>}<form onSubmit={submit} className="space-y-4"><div><label className="mb-2 block text-xs font-bold uppercase tracking-widest text-zinc-400" htmlFor="email">Email</label><input id="email" name="email" type="email" required autoComplete="email" placeholder="you@example.com" className="w-full rounded-2xl border border-zinc-200 bg-zinc-50 px-4 py-3.5 text-sm outline-none focus:border-zinc-950 dark:border-zinc-800 dark:bg-zinc-900 dark:focus:border-white"/></div><div><label className="mb-2 block text-xs font-bold uppercase tracking-widest text-zinc-400" htmlFor="password">Password</label><input id="password" name="password" type="password" required autoComplete="current-password" placeholder="Your password" className="w-full rounded-2xl border border-zinc-200 bg-zinc-50 px-4 py-3.5 text-sm outline-none focus:border-zinc-950 dark:border-zinc-800 dark:bg-zinc-900 dark:focus:border-white"/></div><button disabled={loading} className="mt-2 w-full rounded-2xl bg-zinc-950 px-4 py-4 text-sm font-bold text-white transition hover:-translate-y-0.5 disabled:opacity-50 dark:bg-white dark:text-zinc-950">{loading?'Signing in…':'Continue'}</button></form><p className="mt-6 text-center text-xs text-zinc-400">Demo: <span className="font-semibold">demo@flowlist.app</span></p></section></div></main>
+export default function LoginPage() {
+  const router = useRouter();
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
+
+  async function submit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault(); setLoading(true); setError('');
+    try {
+      const form = new FormData(e.currentTarget);
+      const response = await fetch('/api/auth/login', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email: form.get('email'), password: form.get('password') }) });
+      const data = await response.json();
+      if (!response.ok) { setError(data.error ?? 'Unable to sign in.'); return; }
+      router.push('/todos'); router.refresh();
+    } catch { setError('Something went wrong.'); } finally { setLoading(false); }
+  }
+
+  return (
+    <main className="min-h-screen bg-black text-white">
+      <header className="border-b border-[#30363d] bg-[#0d1117]">
+        <div className="mx-auto flex max-w-[1280px] items-center justify-between px-4 py-3 sm:px-6">
+          <Link href="/login" className="flex items-center gap-3 text-sm font-semibold"><span className="grid h-8 w-8 place-items-center rounded-full border border-white">F</span>Flowlist</Link>
+          <span className="font-mono text-xs text-[#8b949e]">sign in</span>
+        </div>
+      </header>
+      <div className="mx-auto grid min-h-[calc(100vh-57px)] max-w-[1012px] items-center gap-10 px-4 py-10 lg:grid-cols-[1fr_400px]">
+        <section className="hidden lg:block">
+          <p className="font-mono text-sm text-[#8b949e]">flowlist / authentication</p>
+          <h1 className="mt-4 max-w-xl text-[40px] font-normal leading-[1.2]">A focused workspace for work worth finishing.</h1>
+          <p className="mt-5 max-w-lg text-base text-[#8b949e]">Simple tasks, clear status, and no unnecessary noise.</p>
+        </section>
+        <section className="gh-panel gh-card-shadow p-6 sm:p-8">
+          <h2 className="text-[22px] font-normal">Sign in to Flowlist</h2>
+          <p className="mt-2 text-sm text-[#8b949e]">Use your account credentials to continue.</p>
+          {error && <div role="alert" className="mt-5 rounded-md border border-[#ff7b72] bg-[#160c0b] px-3 py-3 text-sm text-[#ff7b72]">{error}</div>}
+          <form onSubmit={submit} className="mt-6 space-y-4">
+            <div><label htmlFor="email" className="mb-2 block text-sm font-semibold">Email</label><input id="email" name="email" type="email" required autoComplete="email" className="gh-input w-full" /></div>
+            <div><label htmlFor="password" className="mb-2 block text-sm font-semibold">Password</label><input id="password" name="password" type="password" required autoComplete="current-password" className="gh-input w-full" /></div>
+            <button type="submit" disabled={loading} className="gh-primary-button w-full">{loading ? 'Signing in…' : 'Sign in'}</button>
+          </form>
+          <p className="mt-6 border-t border-[#30363d] pt-5 text-center text-sm text-[#8b949e]">New to Flowlist? <Link href="/register" className="text-[#8dd6ff] hover:underline">Create an account</Link></p>
+        </section>
+      </div>
+    </main>
+  );
 }
