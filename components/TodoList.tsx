@@ -1,18 +1,48 @@
 'use client';
-import { useMemo,useState } from 'react';
+import { useMemo, useState } from 'react';
 import { type Todo } from '@/actions/todos';
 import TodoItem from './TodoItem';
-import { GooeyNav } from '@/components/ui/gooey-nav';
-import { AnimatedCounter } from '@/components/ui/animated-counter';
 
-type Filter='all'|'active'|'completed';
-export default function TodoList({todos}:{todos:Todo[]}){
- const [filter,setFilter]=useState<Filter>('all');
- const active=todos.filter(t=>!t.completed).length; const completed=todos.length-active;
- const filtered=useMemo(()=>filter==='active'?todos.filter(t=>!t.completed):filter==='completed'?todos.filter(t=>t.completed):todos,[filter,todos]);
- const idx=filter==='all'?0:filter==='active'?1:2;
- return <div>
-  <div className="mb-7 flex flex-wrap items-center justify-between gap-4"><div><p className="text-xs font-bold uppercase tracking-[.18em] text-zinc-400">Your list</p><div className="mt-1 flex items-baseline gap-2"><AnimatedCounter value={todos.length} className="text-2xl font-black"/><span className="text-xs text-zinc-400">total tasks</span></div></div><GooeyNav value={idx} onChange={i=>setFilter(i===0?'all':i===1?'active':'completed')} items={[{label:'All',count:todos.length},{label:'Open',count:active},{label:'Done',count:completed}]}/></div>
-  {filtered.length===0?<div className="rounded-3xl border border-dashed border-zinc-200 px-6 py-16 text-center dark:border-zinc-800"><div className="mx-auto grid h-14 w-14 place-items-center rounded-full bg-zinc-100 text-xl dark:bg-zinc-900">✦</div><p className="mt-5 font-bold">Nothing here.</p><p className="mt-1 text-sm text-zinc-400">{todos.length?'Try another view.':'Add a task and make the first move.'}</p></div>:<ul className="space-y-2">{filtered.map(todo=><TodoItem key={todo.id} todo={todo}/>)}</ul>}
- </div>;
+type Filter = 'all' | 'active' | 'completed';
+
+export default function TodoList({ todos }: { todos: Todo[] }) {
+  const [filter, setFilter] = useState<Filter>('all');
+  const active = todos.filter((todo) => !todo.completed).length;
+  const completed = todos.length - active;
+  const filtered = useMemo(
+    () => filter === 'active' ? todos.filter((todo) => !todo.completed) : filter === 'completed' ? todos.filter((todo) => todo.completed) : todos,
+    [filter, todos],
+  );
+
+  const filters: { id: Filter; label: string; count: number }[] = [
+    { id: 'all', label: 'All tasks', count: todos.length },
+    { id: 'active', label: 'Open', count: active },
+    { id: 'completed', label: 'Completed', count: completed },
+  ];
+
+  return (
+    <div>
+      <div className="flex flex-col gap-4 border-b border-[#30363d] p-4 sm:flex-row sm:items-center sm:justify-between sm:px-5">
+        <div>
+          <h2 className="text-[22px] font-normal leading-7">Task list</h2>
+          <p className="mt-1 font-mono text-xs text-[#8b949e]">{filtered.length} matching records</p>
+        </div>
+        <div className="flex flex-wrap gap-1 rounded-md border border-[#30363d] bg-[#0d1117] p-1" role="tablist" aria-label="Task filters">
+          {filters.map((item) => (
+            <button key={item.id} type="button" role="tab" aria-selected={filter === item.id} onClick={() => setFilter(item.id)} className={`min-h-9 rounded px-3 text-sm transition duration-100 ${filter === item.id ? 'bg-[#21262d] font-semibold text-white' : 'text-[#8b949e] hover:text-white'}`}>
+              {item.label} <span className="ml-1 font-mono text-xs opacity-70">{item.count}</span>
+            </button>
+          ))}
+        </div>
+      </div>
+      {filtered.length === 0 ? (
+        <div className="px-6 py-16 text-center">
+          <p className="font-mono text-sm text-[#8b949e]">No matching tasks.</p>
+          <p className="mt-2 text-sm text-[#8b949e]">{todos.length ? 'Try another filter.' : 'Create your first task to get started.'}</p>
+        </div>
+      ) : (
+        <ul>{filtered.map((todo) => <TodoItem key={todo.id} todo={todo} />)}</ul>
+      )}
+    </div>
+  );
 }
